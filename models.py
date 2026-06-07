@@ -8,6 +8,7 @@ class UserRole(Enum):
 
 @dataclass
 class User:
+    user_id: int
     username: str
     email: str
     phone: str
