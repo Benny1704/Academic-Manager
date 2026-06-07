@@ -65,3 +65,13 @@ class UserService:
             "message": "User added successfully",
             "user": user
         }
+  
+  def login_user(self,username,email,password) -> str:
+
+    users = self._load_users()
+    if users:
+      for user in users:
+        if (user.username == username or user.email == email) and user.password == password:
+          return f"Login Successfull, Welcome {user.username}"
+        else:
+          return "Invalid Credentials"
