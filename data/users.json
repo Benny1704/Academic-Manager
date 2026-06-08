@@ -6,6 +6,6 @@
         "phone": "9962150304",
         "password": "Benny@1917",
         "role": "admin",
-        "is_logged_in": false
+        "is_logged_in": true
     }
 ]

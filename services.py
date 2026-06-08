@@ -1,7 +1,8 @@
 from dataclasses import asdict
+from decorators import login_required
 from models import User, UserRole, Student, Course
 from storage import load_json, save_json
-from validators import is_valid_role, is_valid_username, is_valid_email, is_valid_phone, is_valid_password
+from validators import is_valid_role, is_valid_username, is_valid_email, is_valid_phone, is_valid_password, is_valid_name, is_valid_age, is_valid_mark
 
 class UserService:
 
@@ -62,16 +63,83 @@ class UserService:
 
     return {
             "success": True,
-            "message": "User added successfully",
+            "message": f"{user.username} added successfully",
             "user": user
         }
   
-  def login_user(self,username,email,password) -> str:
+  def login_user(self,username,email,password) -> dict:
 
     users = self._load_users()
-    if users:
-      for user in users:
-        if (user.username == username or user.email == email) and user.password == password:
-          return f"Login Successfull, Welcome {user.username}"
-        else:
-          return "Invalid Credentials"
+    for user in users:
+      if (user.username == username or user.email == email) and user.password == password:
+        user.is_logged_in = True
+        self._save_users(users)
+        return {
+          "status": True,
+          "message": f"Login Successfull, Welcome {user.username}",
+          "current_user": user.user_id
+        }
+    return {
+          "status": False,
+          "error": f"Login Unsuccessfull, Invalid Credentials!",
+          "current_user": None
+        }
+  
+class StudentService:
+  
+  def __init__(self,filepath:str):
+    self.filepath = filepath
+
+  def _load_students(self) -> list[Student]:
+    data = load_json(self.filepath)
+    return [Student(**student) for student in data]
+  
+  def _save_students(self,students: list[Student]) -> None:
+    data = [asdict(student) for student in students]
+    save_json(self.filepath,data)
+
+  def add_student(self,name,age,email,phone,mark) -> dict:
+    errors = []
+    if not is_valid_name(name):
+      errors.append(f"Invalid name: {name}")
+      
+    if not is_valid_age(age):
+      errors.append(f"Invalid age: {age}")
+      
+    if not is_valid_email(email):
+      errors.append(f"Invalid email: {email}")
+      
+    if not is_valid_phone(phone):
+      errors.append(f"Invalid phone: {phone}")
+      
+    if not is_valid_mark(mark):
+      errors.append(f"Invalid mark: {mark}")
+
+    if errors:
+      return {
+        "status": False,
+        "error": errors
+      }
+    
+    students = self._load_students()
+    next_id = 1
+
+    if students:
+      for student in students:
+        if student.email == email:
+          return {
+            "status": False,
+            "error": f"email already exists: {email}"
+          }
+      next_id = max(student.student_id for student in students) + 1
+    
+    student = Student(student_id=next_id,name=name,age=age,email=email,phone=phone,mark=mark)
+    students.append(student)
+    self._save_students(students)
+
+    return {
+      "status": True,
+      "message": f"{student.name} has been added successfully"
+    }
+    
+  
