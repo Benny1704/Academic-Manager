@@ -187,7 +187,6 @@ class StudentService:
 
     for student in students:
       if student.name == name or student.email == email or student.phone == phone:
-        student_found = True
         courses = ", ".join(student.enrolled_courses) if student.enrolled_courses else "None"
         print()
         print(f"---------> Student Details <---------")
@@ -204,6 +203,22 @@ class StudentService:
         return
 
     print("Cant find student for your search")
+
+  def update_student_mark(self,student_id,new_mark):
+    students = self._load_students()
+
+    if not students:
+        print("No students found")
+        return
+    
+    for student in students:
+      if student.student_id == student_id:
+        student.mark = new_mark
+        self._save_students(students)
+        print(f"Updated {student.name}'s mark to {student.mark}")
+        return
+    print(f"Cant Update {student.name}'s mark to {student.mark}")
+
         
 
     

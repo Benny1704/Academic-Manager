@@ -48,6 +48,7 @@ def menu():
     print("1. Add Students")
     print("2. View Students")
     print("3. Search Student")
+    print("4. Update Student Mark")
 
     option = int(input("Enter what you wanna do? : "))
 
@@ -65,6 +66,10 @@ def menu():
             email = input("Email: ")
             phone = input("Phone: ")
             studentService.search_student(name=name,email=email,phone=phone)
+        case 4:
+            id = int(input("Enter Student ID: "))
+            mark = int(input("Enter New Mark: "))
+            studentService.update_student_mark(student_id=id,new_mark=mark)
 
 
 current_user = None
