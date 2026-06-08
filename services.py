@@ -98,6 +98,20 @@ class StudentService:
     data = [asdict(student) for student in students]
     save_json(self.filepath,data)
 
+  def _get_grade(self, mark: int) -> str:
+    if mark >= 90:
+      return "A"
+    if mark >= 80:
+      return "B"
+    if mark >= 70:
+      return "C"
+    if mark >= 60:
+      return "D"
+    return "F"
+
+  def _get_status(self, mark: int) -> str:
+    return "Pass" if mark >= 35 else "Fail"
+
   def add_student(self,name,age,email,phone,mark) -> dict:
     errors = []
     if not is_valid_name(name):
@@ -141,5 +155,27 @@ class StudentService:
       "status": True,
       "message": f"{student.name} has been added successfully"
     }
+  
+  def view_students(self) -> None:
+    students = self._load_students()
+
+    if not students:
+        print("No students found")
+        return
+
+    for index, student in enumerate(students):
+        courses = ", ".join(student.enrolled_courses) if student.enrolled_courses else "None"
+        print()
+        print(f"---------> Student {index + 1} <---------")
+        print(f"ID: {student.student_id}")
+        print(f"Name: {student.name}")
+        print(f"Age: {student.age}")
+        print(f"Email: {student.email}")
+        print(f"Phone: {student.phone}")
+        print(f"Mark: {student.mark}")
+        print(f"Grade: {self._get_grade(student.mark)}")
+        print(f"Status: {self._get_status(student.mark)}")
+        print(f"Courses: {courses}")
+        print()
     
   
