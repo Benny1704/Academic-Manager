@@ -47,6 +47,7 @@ def menu():
     print("n")
     print("1. Add Students")
     print("2. View Students")
+    print("3. Search Student")
 
     option = int(input("Enter what you wanna do? : "))
 
@@ -59,6 +60,11 @@ def menu():
                 print(student_add_result["error"])
         case 2:
             studentService.view_students()
+        case 3:
+            name = input("Name: ")
+            email = input("Email: ")
+            phone = input("Phone: ")
+            studentService.search_student(name=name,email=email,phone=phone)
 
 
 current_user = None

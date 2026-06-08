@@ -177,5 +177,34 @@ class StudentService:
         print(f"Status: {self._get_status(student.mark)}")
         print(f"Courses: {courses}")
         print()
+
+  def search_student(self,name,email,phone) -> None:
+    students = self._load_students()
+
+    if not students:
+        print("No students found")
+        return
+
+    for student in students:
+      if student.name == name or student.email == email or student.phone == phone:
+        student_found = True
+        courses = ", ".join(student.enrolled_courses) if student.enrolled_courses else "None"
+        print()
+        print(f"---------> Student Details <---------")
+        print(f"ID: {student.student_id}")
+        print(f"Name: {student.name}")
+        print(f"Age: {student.age}")
+        print(f"Email: {student.email}")
+        print(f"Phone: {student.phone}")
+        print(f"Mark: {student.mark}")
+        print(f"Grade: {self._get_grade(student.mark)}")
+        print(f"Status: {self._get_status(student.mark)}")
+        print(f"Courses: {courses}")
+        print()
+        return
+
+    print("Cant find student for your search")
+        
+
     
   
