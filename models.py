@@ -24,6 +24,8 @@ class Student:
     email: str
     phone: str
     mark: int
+    grade: str
+    status: str
     enrolled_courses: list[str] = field(default_factory=list)
 
 @dataclass

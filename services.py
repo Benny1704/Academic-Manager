@@ -1,6 +1,5 @@
 from dataclasses import asdict
-from decorators import login_required
-from models import User, UserRole, Student, Course
+from models import User, UserRole, Student
 from storage import load_json, save_json
 from validators import is_valid_role, is_valid_username, is_valid_email, is_valid_phone, is_valid_password, is_valid_name, is_valid_age, is_valid_mark
 
@@ -62,7 +61,7 @@ class UserService:
     self._save_users(users)
 
     return {
-            "success": True,
+            "status": True,
             "message": f"{user.username} added successfully",
             "user": user
         }
@@ -147,7 +146,7 @@ class StudentService:
           }
       next_id = max(student.student_id for student in students) + 1
     
-    student = Student(student_id=next_id,name=name,age=age,email=email,phone=phone,mark=mark)
+    student = Student(student_id=next_id,name=name,age=age,email=email,phone=phone,mark=mark,grade=self._get_grade(mark),status=self._get_status(mark))
     students.append(student)
     self._save_students(students)
 
@@ -156,68 +155,71 @@ class StudentService:
       "message": f"{student.name} has been added successfully"
     }
   
-  def view_students(self) -> None:
+  def view_students(self) -> dict:
     students = self._load_students()
 
     if not students:
-        print("No students found")
-        return
+      return {
+        "status": False,
+        "error": "No Students Found"
+      }
+    
+    return {
+      "status": True,
+      "students": students
+    }
 
-    for index, student in enumerate(students):
-        courses = ", ".join(student.enrolled_courses) if student.enrolled_courses else "None"
-        print()
-        print(f"---------> Student {index + 1} <---------")
-        print(f"ID: {student.student_id}")
-        print(f"Name: {student.name}")
-        print(f"Age: {student.age}")
-        print(f"Email: {student.email}")
-        print(f"Phone: {student.phone}")
-        print(f"Mark: {student.mark}")
-        print(f"Grade: {self._get_grade(student.mark)}")
-        print(f"Status: {self._get_status(student.mark)}")
-        print(f"Courses: {courses}")
-        print()
-
-  def search_student(self,name,email,phone) -> None:
+  def search_student(self,name,email,phone) -> dict:
     students = self._load_students()
 
     if not students:
-        print("No students found")
-        return
+      return {
+        "status": False,
+        "error": "No Students Found"
+      }
 
     for student in students:
       if student.name == name or student.email == email or student.phone == phone:
-        courses = ", ".join(student.enrolled_courses) if student.enrolled_courses else "None"
-        print()
-        print(f"---------> Student Details <---------")
-        print(f"ID: {student.student_id}")
-        print(f"Name: {student.name}")
-        print(f"Age: {student.age}")
-        print(f"Email: {student.email}")
-        print(f"Phone: {student.phone}")
-        print(f"Mark: {student.mark}")
-        print(f"Grade: {self._get_grade(student.mark)}")
-        print(f"Status: {self._get_status(student.mark)}")
-        print(f"Courses: {courses}")
-        print()
-        return
+        return {
+          "status": True,
+          "student": student
+        }
 
-    print("Cant find student for your search")
+    return {
+      "status": False,
+      "error": "Cant find student for your search"
+    }
 
   def update_student_mark(self,student_id,new_mark):
+
+    if not is_valid_mark(new_mark):
+      return {
+        "status": False,
+        "error": "Invalid Mark"
+      }
+
     students = self._load_students()
 
     if not students:
-        print("No students found")
-        return
+      return {
+        "status": False,
+        "error": "No Students Found"
+      }
     
     for student in students:
       if student.student_id == student_id:
         student.mark = new_mark
+        student.grade=self._get_grade(student.mark)
+        student.status=self._get_status(student.mark)
         self._save_students(students)
-        print(f"Updated {student.name}'s mark to {student.mark}")
-        return
-    print(f"Cant Update {student.name}'s mark to {student.mark}")
+        return {
+          "status": True,
+          "message": f"Updated {student.name}'s mark to {student.mark}"
+        }
+    return {
+      "status": False,
+      "error": f"Student ID {student_id} not found"
+    }
 
         
 
