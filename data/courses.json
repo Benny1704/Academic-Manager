@@ -4,5 +4,17 @@
         "name": "Elite Browine",
         "fee": 100000,
         "duration_weeks": 12
+    },
+    {
+        "course_id": 2,
+        "name": "English",
+        "fee": 2000,
+        "duration_weeks": 12
+    },
+    {
+        "course_id": 3,
+        "name": "Maths",
+        "fee": 90000,
+        "duration_weeks": 48
     }
 ]

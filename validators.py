@@ -25,8 +25,8 @@ def is_valid_age(age: int) -> bool:
 def is_valid_week(week: int) -> bool:
   return 0 <= week <= 52
 
-def is_valid_fee(age: int) -> bool:
-  return 500 <= age <= 100000
+def is_valid_fee(fee: int) -> bool:
+  return 500 <= fee <= 100000
 
 def is_valid_role(role: str) -> UserRole | None:
   role = role.strip().lower()

@@ -1,1 +1,18 @@
-[]
+[
+    {
+        "payment_id": 1,
+        "student_id": 2,
+        "course_id": 2,
+        "amount": 2000,
+        "payment_method": "cash",
+        "message": "paid \u20b92000 using Cash"
+    },
+    {
+        "payment_id": 2,
+        "student_id": 2,
+        "course_id": 3,
+        "amount": 10000,
+        "payment_method": "card",
+        "message": "paid \u20b910000 using Card"
+    }
+]

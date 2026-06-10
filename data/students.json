@@ -9,5 +9,29 @@
         "grade": "B",
         "status": "Pass",
         "enrolled_courses": []
+    },
+    {
+        "student_id": 2,
+        "name": "John",
+        "age": 16,
+        "email": "john@gmail.com",
+        "phone": "1234567890",
+        "mark": 100,
+        "grade": "A",
+        "status": "Pass",
+        "enrolled_courses": [
+            {
+                "course_id": 2,
+                "name": "English",
+                "fee": 2000,
+                "duration_weeks": 12
+            },
+            {
+                "course_id": 3,
+                "name": "Maths",
+                "fee": 90000,
+                "duration_weeks": 48
+            }
+        ]
     }
 ]

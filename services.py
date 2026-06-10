@@ -5,7 +5,7 @@ from validators import is_valid_fee, is_valid_role, is_valid_username, is_valid_
 
 class UserService:
 
-  def __init__(self,filepath:str):
+  def __init__(self, filepath: str):
     self.filepath = filepath
 
   def _load_users(self) -> list[User]:
@@ -21,11 +21,11 @@ class UserService:
       users.append(User(**user))
     return users
   
-  def _save_users(self,users: list[User]) -> None:
+  def _save_users(self, users: list[User]) -> None:
     data = [asdict(user) for user in users]
-    save_json(self.filepath,data)
+    save_json(self.filepath, data)
 
-  def register_user(self,username,email,phone,password,role) -> dict:
+  def register_user(self, username, email, phone, password, role) -> dict:
     errors = []
     if not is_valid_username(username):
       errors.append(f"Invalid username: {username}")
@@ -69,18 +69,18 @@ class UserService:
           max_id = user.user_id
       next_id = max_id + 1
 
-    user = User(next_id,username,email,phone,password,role_enum)
+    user = User(next_id, username, email, phone, password, role_enum)
     users.append(user)
     self._save_users(users)
 
     return {
-            "status": True,
-            "message": f"{user.username} added successfully",
-            "user": user
-        }
+      "status": True,
+      "message": f"{user.username} added successfully",
+      "user": user
+    }
   
-  def login_user(self,username,email,password) -> dict:
-
+  def login_user(self, username, email, password) -> dict:
+    """Authenticate user and set login status."""
     users = self._load_users()
     for user in users:
       if (user.username == username or user.email == email) and user.password == password:
@@ -88,18 +88,18 @@ class UserService:
         self._save_users(users)
         return {
           "status": True,
-          "message": f"Login Successfull, Welcome {user.username}",
+          "message": f"Login Successful, Welcome {user.username}",
           "user_id": user.user_id
         }
     return {
-          "status": False,
-          "error": f"Login Unsuccessfull, Invalid Credentials!",
-          "user_id": None
-        }
+      "status": False,
+      "error": "Login Unsuccessful, Invalid Credentials!",
+      "user_id": None
+    }
   
 class StudentService:
   
-  def __init__(self,filepath:str):
+  def __init__(self, filepath: str):
     self.filepath = filepath
 
   def _load_students(self) -> list[Student]:
@@ -111,11 +111,12 @@ class StudentService:
       students.append(Student(**student))
     return students
   
-  def _save_students(self,students: list[Student]) -> None:
+  def _save_students(self, students: list[Student]) -> None:
     data = [asdict(student) for student in students]
-    save_json(self.filepath,data)
+    save_json(self.filepath, data)
 
   def _get_grade(self, mark: int) -> str:
+    """Calculate grade based on mark."""
     if mark >= 90:
       return "A"
     if mark >= 80:
@@ -127,9 +128,11 @@ class StudentService:
     return "F"
 
   def _get_status(self, mark: int) -> str:
+    """Determine pass/fail status based on mark."""
     return "Pass" if mark >= 35 else "Fail"
 
-  def add_student(self,name,age,email,phone,mark) -> dict:
+  def add_student(self, name, age, email, phone, mark) -> dict:
+    """Add a new student with validation."""
     errors = []
     if not is_valid_name(name):
       errors.append(f"Invalid name: {name}")
@@ -167,7 +170,10 @@ class StudentService:
           max_id = student.student_id
       next_id = max_id + 1
     
-    student = Student(student_id=next_id,name=name,age=age,email=email,phone=phone,mark=mark,grade=self._get_grade(mark),status=self._get_status(mark))
+    student = Student(
+        student_id=next_id, name=name, age=age, email=email, phone=phone,
+        mark=mark, grade=self._get_grade(mark), status=self._get_status(mark)
+    )
     students.append(student)
     self._save_students(students)
 
@@ -177,6 +183,7 @@ class StudentService:
     }
   
   def view_students(self) -> dict:
+    """Get all students."""
     students = self._load_students()
 
     if not students:
@@ -190,7 +197,8 @@ class StudentService:
       "students": students
     }
 
-  def search_students(self,name,email,phone) -> dict:
+  def search_students(self, name, email, phone) -> dict:
+    """Search for students by name, email, or phone."""
     students = self._load_students()
     found_students = []
 
@@ -206,17 +214,17 @@ class StudentService:
 
     if found_students:
       return {
-          "status": True,
-          "students": found_students
-        }
+        "status": True,
+        "students": found_students
+      }
 
     return {
       "status": False,
       "error": "Cant find student for your search"
     }
 
-  def update_student_mark(self,student_id,new_mark):
-
+  def update_student_mark(self, student_id, new_mark) -> dict:
+    """Update a student's mark and recalculate grade/status."""
     if not is_valid_mark(new_mark):
       return {
         "status": False,
@@ -234,8 +242,8 @@ class StudentService:
     for student in students:
       if student.student_id == student_id:
         student.mark = new_mark
-        student.grade=self._get_grade(student.mark)
-        student.status=self._get_status(student.mark)
+        student.grade = self._get_grade(student.mark)
+        student.status = self._get_status(student.mark)
         self._save_students(students)
         return {
           "status": True,
@@ -246,7 +254,8 @@ class StudentService:
       "error": f"Student ID {student_id} not found"
     }
 
-  def delete_student(self,student_id):
+  def delete_student(self, student_id) -> dict:
+    """Delete a student by ID."""
     students = self._load_students()
 
     if not students:
@@ -278,18 +287,19 @@ class StudentService:
 
 class CourseService:
 
-  def __init__(self,filepath:str):
+  def __init__(self, filepath: str):
     self.filepath = filepath
 
   def _load_courses(self) -> list[Course]:
     data = load_json(self.filepath)
     return [Course(**course) for course in data]
 
-  def _save_courses(self,courses: list[Course]) -> None:
+  def _save_courses(self, courses: list[Course]) -> None:
     data = [asdict(course) for course in courses]
-    save_json(self.filepath,data)
+    save_json(self.filepath, data)
 
-  def add_course(self,name,fee,duration_weeks):
+  def add_course(self, name, fee, duration_weeks) -> dict:
+    """Add a new course with validation."""
     errors = []
 
     if not is_valid_name(name):
@@ -314,15 +324,15 @@ class CourseService:
     if courses:
       max_id = 0
       for course in courses:
-          if course.name.lower() == name.lower():
-              return { "status": False, "error": "Course name already exists" }
-          
-          if course.course_id > max_id:
-              max_id = course.course_id
+        if course.name.lower() == name.lower():
+          return {"status": False, "error": "Course name already exists"}
+        
+        if course.course_id > max_id:
+          max_id = course.course_id
               
       next_id = max_id + 1
 
-    course = Course(course_id=next_id,name=name,fee=fee,duration_weeks=duration_weeks)
+    course = Course(course_id=next_id, name=name, fee=fee, duration_weeks=duration_weeks)
     courses.append(course)
     self._save_courses(courses)
 
@@ -334,11 +344,12 @@ class CourseService:
 
 class EnrollmentService:
 
-  def __init__(self, student_filepath: str, course_filepath: str):
-    self.student_service = StudentService(student_filepath)
-    self.course_service = CourseService(course_filepath)
+  def __init__(self, student_service: StudentService, course_service: CourseService):
+    self.student_service = student_service
+    self.course_service = course_service
 
   def enroll_student(self, student_id: int, course_id: int) -> dict:
+    """Enroll a student in a course."""
     students = self.student_service._load_students()
     courses = self.course_service._load_courses()
 
@@ -366,12 +377,12 @@ class EnrollmentService:
     student_found = False
     for student in students:
       if student.student_id == student_id:
-          student_found = True
-          
-          if any(course.course_id == course_id for course in student.enrolled_courses):
-            return {"status": False, "error": f"Student is already enrolled in this course."}
-          student.enrolled_courses.append(target_course)
-          break
+        student_found = True
+        
+        if any(course.course_id == course_id for course in student.enrolled_courses):
+          return {"status": False, "error": f"Student is already enrolled in this course."}
+        student.enrolled_courses.append(target_course)
+        break
 
     if not student_found:
       return {"status": False, "error": f"Student ID {student_id} not found."}
@@ -411,15 +422,15 @@ class PaymentService:
     data = [asdict(payment) for payment in payments]
     save_json(self.filepath,data)
 
-  def make_fee_payment(self,student_id,course_id,amount,payment_method: str):
-
+  def make_fee_payment(self, student_id, course_id, amount, payment_method: str) -> dict:
+    """Process a fee payment for a student."""
     try:
       payment_method = PaymentMethod(payment_method.strip().lower())
     except ValueError:
       return {"status": False, "error": "Invalid payment method. Use cash, upi, or card"}
 
     payment = self.__methods[payment_method]
-    method,message = payment.pay(amount)
+    method, message = payment.pay(amount)
 
     payments = self._load_payments()
 
@@ -427,7 +438,10 @@ class PaymentService:
     if payments:
       next_id = max(payment.payment_id for payment in payments) + 1
 
-    payment_record = Payment(payment_id=next_id,student_id=student_id,course_id=course_id,amount=amount,payment_method=payment_method,message=message)
+    payment_record = Payment(
+        payment_id=next_id, student_id=student_id, course_id=course_id,
+        amount=amount, payment_method=payment_method, message=message
+    )
     payments.append(payment_record)
     self._save_payments(payments)
 

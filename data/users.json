@@ -7,5 +7,14 @@
         "password": "Benny@1917",
         "role": "admin",
         "is_logged_in": true
+    },
+    {
+        "user_id": 2,
+        "username": "Thomas",
+        "email": "thomas@gmail.com",
+        "phone": "9962150305",
+        "password": "Thomas@123",
+        "role": "staff",
+        "is_logged_in": true
     }
 ]

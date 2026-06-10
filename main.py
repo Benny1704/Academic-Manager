@@ -1,15 +1,16 @@
 from decorators import admin_required, login_required
 from models import Student
 from services import CourseService, EnrollmentService, PaymentService, UserService, StudentService
-from reports import ReportService
+from reports import DashboardService, ReportService
 
 session = {"user_id": None}
 userService = UserService("data/users.json")
 studentService = StudentService("data/students.json")
 courseService = CourseService("data/courses.json")
-enrollmentService = EnrollmentService(student_filepath="data/students.json", course_filepath="data/courses.json")
+enrollmentService = EnrollmentService(studentService, courseService)
 paymentService = PaymentService("data/payments.json")
 reportService = ReportService(studentService, paymentService)
+dashboardService = DashboardService(userService, studentService, courseService, paymentService)
 
 print("Welcome to Academic Manager!")
 print("----------------------------")
@@ -36,6 +37,7 @@ def login_user():
     return userService.login_user(username=username, email=email, password=password)
 
 def read_int(prompt: str) -> int:
+    """Read and validate integer input from user."""
     while True:
         try:
             return int(input(prompt))
@@ -97,9 +99,9 @@ def search_student():
     name = input("Name: ")
     email = input("Email: ")
     phone = input("Phone: ")
-    search_student_result = studentService.search_students(name=name,email=email,phone=phone)
+    search_student_result = studentService.search_students(name=name, email=email, phone=phone)
 
-    if(search_student_result["status"] == True):
+    if search_student_result["status"]:
         students = search_student_result["students"]
         print()
         print(f"---------> Students Found ({len(students)}) <---------")
@@ -257,29 +259,32 @@ def menu():
         print("7. Enroll Student in Course")
         print("8. Make Fee Payment")
         print("9. Student Report")
+        print("10. Summary Dashboard ")
         print()
 
         option = read_int("Enter what you wanna do? : ")
 
         match option:
             case 1:
-                add_student()
+                print_action_error(add_student())
             case 2:
-                view_students()
+                print_action_error(view_students())
             case 3:
-                search_student()
+                print_action_error(search_student())
             case 4:
-                update_student_mark()
+                print_action_error(update_student_mark())
             case 5:
-                delete_student()
+                print_action_error(delete_student())
             case 6:
-                add_course()
+                print_action_error(add_course())
             case 7:
-                enroll_course()
+                print_action_error(enroll_course())
             case 8:
-                fee_payment()
+                print_action_error(fee_payment())
             case 9:
-                student_report()
+                print_action_error(student_report())
+            case 10:
+                dashboardService.summary_dashboard()
             case _:
                 print("Invalid option")
                 continue
