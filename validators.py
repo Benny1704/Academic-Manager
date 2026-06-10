@@ -1,5 +1,5 @@
 import re
-from models import UserRole
+from models import PaymentMethod, UserRole
 
 def is_valid_username(username: str) -> bool:
   return bool(re.fullmatch(r"\w{3,15}",username))
@@ -21,6 +21,12 @@ def is_valid_mark(mark: int) -> bool:
 
 def is_valid_age(age: int) -> bool:
   return 1 <= age <= 120
+
+def is_valid_week(week: int) -> bool:
+  return 0 <= week <= 52
+
+def is_valid_fee(age: int) -> bool:
+  return 500 <= age <= 100000
 
 def is_valid_role(role: str) -> UserRole | None:
   role = role.strip().lower()

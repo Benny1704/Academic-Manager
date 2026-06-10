@@ -1,1 +1,13 @@
-[]
+[
+    {
+        "student_id": 1,
+        "name": "Dulquer Salmaan",
+        "age": 42,
+        "email": "goblin@surgery.com",
+        "phone": "0000000000",
+        "mark": 80,
+        "grade": "B",
+        "status": "Pass",
+        "enrolled_courses": []
+    }
+]
