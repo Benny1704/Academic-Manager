@@ -190,8 +190,9 @@ class StudentService:
       "students": students
     }
 
-  def search_student(self,name,email,phone) -> dict:
+  def search_students(self,name,email,phone) -> dict:
     students = self._load_students()
+    found_students = []
 
     if not students:
       return {
@@ -201,9 +202,12 @@ class StudentService:
 
     for student in students:
       if student.name == name or student.email == email or student.phone == phone:
-        return {
+        found_students.append(student)
+
+    if found_students:
+      return {
           "status": True,
-          "student": student
+          "students": found_students
         }
 
     return {
@@ -264,6 +268,14 @@ class StudentService:
       "message": f"Successfully deleted Student ID: {student_id}"
     }
   
+  def get_student_by_id(self, student_id: int):
+    """Get a single student by ID. Returns Student object or None."""
+    students = self._load_students()
+    for student in students:
+      if student.student_id == student_id:
+        return student
+    return None
+
 class CourseService:
 
   def __init__(self,filepath:str):
@@ -421,4 +433,7 @@ class PaymentService:
 
     return {"status": True, "record": payment_record}
 
-  
+  def get_student_payments(self, student_id: int) -> list[Payment]:
+    """Get all payments for a specific student."""
+    payments = self._load_payments()
+    return [p for p in payments if p.student_id == student_id]
